@@ -27,9 +27,19 @@ contract Ballot is Ownable {
     }
 
     /**
-     * The address with admin rights over the smart contractg.
+     * Event emitted on voter registration.
      */
-    address public chairperson;
+    event RegisterVoter(Voter voter);
+
+    /**
+     * Event emitted on proposal/aspirant registration.
+     */
+    event RegisterProposal(Proposal[]);
+
+    /**
+     * Event emitted on vote casting.
+     */
+    event VoteCasting(Proposal[]);
 
     /**
      * The list of voters and their public addresses.
@@ -68,6 +78,7 @@ contract Ballot is Ownable {
         string calldata _image
     ) external onlyOwner {
         proposals.push(Proposal({name: _name, image: _image, voteCount: 0}));
+        emit RegisterProposal(proposals);
     }
 
     /**
@@ -83,6 +94,7 @@ contract Ballot is Ownable {
 
         voter.delegate = _voterAddress;
         voter.voted = false;
+        emit RegisterVoter(voter);
     }
 
     /**
@@ -99,7 +111,10 @@ contract Ballot is Ownable {
      * @param _schoolID the students school ID.
      * @param proposal the proposal favoured by the student.
      */
-    function vote(string calldata _schoolID, uint proposal) external mustHaveNotVoted(_schoolID) {
+    function vote(
+        string calldata _schoolID,
+        uint proposal
+    ) external mustHaveNotVoted(_schoolID) {
         Voter storage voter = voters[_schoolID];
 
         require(
@@ -110,6 +125,7 @@ contract Ballot is Ownable {
         voter.voted = true;
         proposals[proposal].voteCount += 1;
         castVotes += 1;
+        emit VoteCasting(proposals);
     }
 
     /**
