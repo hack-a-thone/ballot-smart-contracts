@@ -38,15 +38,17 @@ describe("Ballot", function () {
 
       const voterID = "SCII/00724/2017";
 
-      await expect(ballot.connect(owner).registerVoter(voter1.address, voterID))
-        .not.to.reverted;
+      await expect(
+        ballot.connect(owner).registerVoter(voter1.address, voterID)
+      ).to.emit(ballot, "RegisterVoter");
 
       const x = await ballot.getVoter(voterID);
       expect(x.voted).to.false;
       expect(x.delegate).to.equal(voter1.address);
 
-      await expect(ballot.connect(owner).registerVoter(voter2.address, voterID))
-        .not.to.reverted;
+      await expect(
+        ballot.connect(owner).registerVoter(voter2.address, voterID)
+      ).to.emit(ballot, "RegisterVoter");
 
       const y = await ballot.getVoter(voterID);
       expect(y.voted).to.false;
@@ -70,8 +72,9 @@ describe("Ballot", function () {
         deployOneYearLockFixture
       );
 
-      await expect(ballot.connect(owner).registerProposal("Solidity", "")).not
-        .to.reverted;
+      await expect(
+        ballot.connect(owner).registerProposal("Solidity", "")
+      ).to.emit(ballot, "RegisterProposal");
 
       let x = await ballot.getResults();
 
@@ -80,8 +83,10 @@ describe("Ballot", function () {
       expect(x[0][0].image).to.equal("");
       expect(x[0][0].voteCount).to.equal(0);
 
-      await expect(ballot.connect(owner).registerProposal("Rust", "")).not.to
-        .reverted;
+      await expect(ballot.connect(owner).registerProposal("Rust", "")).to.emit(
+        ballot,
+        "RegisterProposal"
+      );
 
       x = await ballot.getResults();
       expect(x[0].length).to.equal(2);
@@ -89,8 +94,10 @@ describe("Ballot", function () {
       expect(x[0][1].image).to.equal("");
       expect(x[0][1].voteCount).to.equal(0);
 
-      await expect(ballot.connect(owner).registerProposal("Web2", "")).not.to
-        .reverted;
+      await expect(ballot.connect(owner).registerProposal("Web2", "")).to.emit(
+        ballot,
+        "RegisterProposal"
+      );
 
       x = await ballot.getResults();
       expect(x[0].length).to.equal(3);
@@ -149,7 +156,7 @@ describe("Ballot", function () {
           voterID1,
           proposals[0].findIndex((item) => item.name === "Solidity")
         )
-      ).not.to.reverted;
+      ).to.emit(ballot, "VoteCasting");
 
       let y = await ballot.getVoter(voterID1);
       expect(y.voted).to.true;
@@ -168,7 +175,7 @@ describe("Ballot", function () {
           voterID2,
           proposals[0].findIndex((item) => item.name === "Rust")
         )
-      ).not.to.reverted;
+      ).to.emit(ballot, "VoteCasting");
 
       y = await ballot.getVoter(voterID2);
       expect(y.voted).to.true;
@@ -187,7 +194,7 @@ describe("Ballot", function () {
           voterID3,
           proposals[0].findIndex((item) => item.name === "Rust")
         )
-      ).not.to.reverted;
+      ).to.emit(ballot, "VoteCasting");
 
       y = await ballot.getVoter(voterID3);
       expect(y.voted).to.true;
